@@ -1,6 +1,7 @@
 {
     "name": "adt/nette-forms-phone-number",
     "type": "library",
+    "license": "MIT",
     "require": {
         "brick/phonenumber": "^0.7",
         "nette/forms": "^2.4 | ^3.0",
