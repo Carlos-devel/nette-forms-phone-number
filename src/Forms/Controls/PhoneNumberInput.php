@@ -88,14 +88,13 @@ class PhoneNumberInput extends BaseControl
 	 */
 	public function getControl()
 	{
-		$countryCode = $this->getControlPart(self::CONTROL_COUNTRY_CODE);
-		$nationalNumber = $this->getControlPart(self::CONTROL_NATIONAL_NUMBER);
+		$html = '';
 
-		$inputGroup = Html::el('div')->setAttribute('class', 'input-group');
-		$inputGroup->addHtml($countryCode);
-		$inputGroup->addHtml($nationalNumber);
+		foreach (self::CONTROLS as $key) {
+			$html .= $this->getControlPart($key);
+		}
 
-		return $this->container->setHtml($inputGroup);
+		return $this->container->setHtml($html);
 	}
 
 	protected function getCountryCodes()
@@ -143,8 +142,21 @@ class PhoneNumberInput extends BaseControl
 					$items = array_merge($items, $this->getCountryCodes());
 				}
 
-				return Helpers::createSelectBox($items, null, $value)
-					->addAttributes($attrs);
+				$select = Helpers::createSelectBox($items, null, $value)
+					->addAttributes($attrs)
+					->setAttribute('class', 'phone-number-country-code')
+					->setAttribute('style', 'border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; padding-right: 0;');
+
+				$style = Html::el('style')->setHtml(
+					'.phone-number-country-code + .select2-container .select2-selection { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
+					. ' .phone-number-country-code + .select2-container { width: 100% !important; overflow: hidden; }'
+					. ' .phone-number-country-code + .select2-container .select2-selection__rendered { text-align: right; padding-right: 1.5em; }'
+				);
+
+				$wrapper = Html::el();
+				$wrapper->addHtml($select);
+				$wrapper->addHtml($style);
+				return $wrapper;
 
 			case self::CONTROL_NATIONAL_NUMBER:
 				if ($this->value instanceof PhoneNumber) {
@@ -157,6 +169,7 @@ class PhoneNumberInput extends BaseControl
 					'type' => 'tel',
 					'value' => $value,
 					'id' => $this->getHtmlId(),
+					'style' => 'border-top-left-radius: 0; border-bottom-left-radius: 0; padding-left: 0;',
 					'data-nette-rules' => \Nette\Forms\Helpers::exportRules($this->getRules()) ?: null,
 				], $attrs));
 		}
