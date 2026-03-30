@@ -88,13 +88,14 @@ class PhoneNumberInput extends BaseControl
 	 */
 	public function getControl()
 	{
-		$html = '';
+		$countryCode = $this->getControlPart(self::CONTROL_COUNTRY_CODE);
+		$nationalNumber = $this->getControlPart(self::CONTROL_NATIONAL_NUMBER);
 
-		foreach (self::CONTROLS as $key) {
-			$html .= $this->getControlPart($key);
-		}
+		$inputGroup = Html::el('div')->setAttribute('class', 'input-group');
+		$inputGroup->addHtml($countryCode);
+		$inputGroup->addHtml($nationalNumber);
 
-		return $this->container->setHtml($html);
+		return $this->container->setHtml($inputGroup);
 	}
 
 	protected function getCountryCodes()
