@@ -151,6 +151,9 @@ class PhoneNumberInput extends BaseControl
 					'.phone-number-country-code + .select2-container .select2-selection { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
 					. ' .phone-number-country-code + .select2-container { width: 100% !important; overflow: hidden; }'
 					. ' .phone-number-country-code + .select2-container .select2-selection__rendered { text-align: right; padding-right: 1.5em; }'
+					. ' .phone-number-country-code { margin-right: 0 !important; }'
+					. ' .row.g-2 > .col-5:has(.phone-number-country-code) { padding-right: 0 !important; }'
+					. ' .row.g-2 > .col-7:has([name$="NationalNumber"]) { padding-left: 0 !important; }'
 				);
 
 				$wrapper = Html::el();
