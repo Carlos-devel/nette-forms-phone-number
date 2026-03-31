@@ -49,7 +49,7 @@ class PhoneNumberInput extends BaseControl
 	{
 		$container->addComponent($control = new self($label), $name);
 
-		$control->container = Html::el();
+		$control->container = Html::el('div')->setAttribute('class', 'input-group');
 		$control->controls[static::CONTROL_COUNTRY_CODE] = Html::el();
 		$control->controls[static::CONTROL_NATIONAL_NUMBER] = Html::el();
 		$control->setDefaultCountryCode(self::getDefaultCountryCodeByIP());
@@ -88,13 +88,13 @@ class PhoneNumberInput extends BaseControl
 	 */
 	public function getControl()
 	{
-		$html = '';
+		$inputGroup = Html::el('div')->setAttribute('class', 'input-group');
 
 		foreach (self::CONTROLS as $key) {
-			$html .= $this->getControlPart($key);
+			$inputGroup->addHtml($this->getControlPart($key));
 		}
 
-		return $this->container->setHtml($html);
+		return $this->container->setHtml($inputGroup);
 	}
 
 	protected function getCountryCodes()
@@ -142,24 +142,8 @@ class PhoneNumberInput extends BaseControl
 					$items = array_merge($items, $this->getCountryCodes());
 				}
 
-				$select = Helpers::createSelectBox($items, null, $value)
-					->addAttributes($attrs)
-					->setAttribute('class', 'phone-number-country-code')
-					->setAttribute('style', 'border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; padding-right: 0;');
-
-				$style = Html::el('style')->setHtml(
-					'.phone-number-country-code + .select2-container .select2-selection { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
-					. ' .phone-number-country-code + .select2-container { width: 100% !important; overflow: hidden; }'
-					. ' .phone-number-country-code + .select2-container .select2-selection__rendered { text-align: right; padding-right: 1.5em; }'
-					. ' .phone-number-country-code { margin-right: 0 !important; }'
-					. ' .row.g-2 > .col-5:has(.phone-number-country-code) { padding-right: 0 !important; flex: 0 0 20%; max-width: 20%; }'
-					. ' .row.g-2 > .col-7:has([name$="NationalNumber"]) { padding-left: 0 !important; flex: 0 0 80%; max-width: 80%; }'
-				);
-
-				$wrapper = Html::el();
-				$wrapper->addHtml($select);
-				$wrapper->addHtml($style);
-				return $wrapper;
+				return Helpers::createSelectBox($items, null, $value)
+					->addAttributes($attrs);
 
 			case self::CONTROL_NATIONAL_NUMBER:
 				if ($this->value instanceof PhoneNumber) {
@@ -172,7 +156,6 @@ class PhoneNumberInput extends BaseControl
 					'type' => 'tel',
 					'value' => $value,
 					'id' => $this->getHtmlId(),
-					'style' => 'border-top-left-radius: 0; border-bottom-left-radius: 0; padding-left: 0;',
 					'data-nette-rules' => \Nette\Forms\Helpers::exportRules($this->getRules()) ?: null,
 				], $attrs));
 		}
