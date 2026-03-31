@@ -49,7 +49,7 @@ class PhoneNumberInput extends BaseControl
 	{
 		$container->addComponent($control = new self($label), $name);
 
-		$control->container = Html::el('div')->setAttribute('class', 'input-group');
+		$control->container = Html::el('div')->setAttribute('class', 'input-group phone-number-input-group');
 		$control->controls[static::CONTROL_COUNTRY_CODE] = Html::el();
 		$control->controls[static::CONTROL_NATIONAL_NUMBER] = Html::el();
 		$control->setDefaultCountryCode(self::getDefaultCountryCodeByIP());
@@ -88,13 +88,23 @@ class PhoneNumberInput extends BaseControl
 	 */
 	public function getControl()
 	{
-		$inputGroup = Html::el('div')->setAttribute('class', 'input-group');
+		$html = '';
 
 		foreach (self::CONTROLS as $key) {
-			$inputGroup->addHtml($this->getControlPart($key));
+			$html .= $this->getControlPart($key);
 		}
 
-		return $this->container->setHtml($inputGroup);
+		$style = Html::el('style')->setHtml(
+		// Select (hidden by Select2, but keeps structure correct)
+			'.phone-number-input-group > select { flex: 0 0 auto; width: auto; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
+			// Select2 container
+			. ' .phone-number-input-group > .select2-container { flex: 0 0 auto; }'
+			. ' .phone-number-input-group > .select2-container .select2-selection { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
+			// Text input
+			. ' .phone-number-input-group > input[type="tel"] { flex: 1 1 auto; border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }'
+		);
+
+		return $this->container->setHtml($html . $style);
 	}
 
 	protected function getCountryCodes()
