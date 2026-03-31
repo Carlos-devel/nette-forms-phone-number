@@ -96,12 +96,12 @@ class PhoneNumberInput extends BaseControl
 
 		$style = Html::el('style')->setHtml(
 		// Select (hidden by Select2, but keeps structure correct)
-			'.phone-number-input-group > select { flex: 0 0 auto; width: auto; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
+			'.phone-number-input-group > select { flex: 0 0 25%; width: 25%; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
 			// Select2 container
-			. ' .phone-number-input-group > .select2-container { flex: 0 0 auto; }'
+			. ' .phone-number-input-group > .select2-container { flex: 0 0 25%; width: 25% !important; }'
 			. ' .phone-number-input-group > .select2-container .select2-selection { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
 			// Text input
-			. ' .phone-number-input-group > input[type="tel"] { flex: 1 1 auto; border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; }'
+			. ' .phone-number-input-group > input[type="tel"] { flex: 0 0 75%; width: 75%; }'
 		);
 
 		return $this->container->setHtml($html . $style);
@@ -152,8 +152,28 @@ class PhoneNumberInput extends BaseControl
 					$items = array_merge($items, $this->getCountryCodes());
 				}
 
-				return Helpers::createSelectBox($items, null, $value)
-					->addAttributes($attrs);
+				$select = Helpers::createSelectBox($items, null, $value)
+					->addAttributes($attrs)
+					->setAttribute('class', 'phone-number-country-code');
+
+				$style = Html::el('style')->setHtml(
+				// Make the row behave like input-group
+					'.row:has(.phone-number-country-code) { --bs-gutter-x: 0 !important; flex-wrap: nowrap !important; }'
+					// Select column: 25% width, no padding
+					. ' .row > [class^="col"]:has(.phone-number-country-code) { flex: 0 0 25% !important; max-width: 25% !important; padding: 0 !important; }'
+					// Input column: 75% width, no padding
+					. ' .row > [class^="col"]:has(input[type="tel"]) { flex: 0 0 75% !important; max-width: 75% !important; padding: 0 !important; }'
+					// Select2: right radius 0
+					. ' .phone-number-country-code + .select2-container .select2-selection { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
+					. ' .phone-number-country-code + .select2-container { width: 100% !important; }'
+					// Native select: right radius 0
+					. ' .phone-number-country-code { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }'
+				);
+
+				$wrapper = Html::el();
+				$wrapper->addHtml($select);
+				$wrapper->addHtml($style);
+				return $wrapper;
 
 			case self::CONTROL_NATIONAL_NUMBER:
 				if ($this->value instanceof PhoneNumber) {
@@ -166,6 +186,7 @@ class PhoneNumberInput extends BaseControl
 					'type' => 'tel',
 					'value' => $value,
 					'id' => $this->getHtmlId(),
+					'style' => 'border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important;',
 					'data-nette-rules' => \Nette\Forms\Helpers::exportRules($this->getRules()) ?: null,
 				], $attrs));
 		}
